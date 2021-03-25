@@ -13,6 +13,9 @@ namespace modelc4_project
             .Build()
             .Get<ModelC4Config>();
 
+            
+            //new ClassicC4(config).Publish();
+
             new ModelC4CoursePlatform(config).Publish();
         }
     }

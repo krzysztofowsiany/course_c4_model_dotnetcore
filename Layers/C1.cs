@@ -1,9 +1,9 @@
 using Structurizr;
 
-namespace modelc4_project.Layers.C1 {
+namespace modelc4_project.Layers {
     internal class C1 {
         public C1(Workspace workspace) {
-            var coursePlatformSystem = new C1Builder(workspace)
+            var coursePlatformSystem = new C4Builder(workspace)
                 .AddPerson("Admin", "Configuring platform, generating coupons")
                 .AddPerson("Customer", "Using course platform, buy on platform")
                 .AddSoftwareSystem("Course Platform", "Sell and delivery courses to customers")

@@ -1,4 +1,4 @@
-using modelc4_project.Layers.C1;
+using modelc4_project.Layers;
 using Structurizr;
 using Structurizr.Api;
 
@@ -15,6 +15,7 @@ namespace modelc4_project
             _workspace = new Workspace("Course Platform", "Sell and delivery courses");
             
             new C1(_workspace);
+            new C2(_workspace);
         }
 
         internal void Publish()

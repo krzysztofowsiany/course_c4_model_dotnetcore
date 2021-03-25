@@ -4,12 +4,12 @@ using Structurizr.Api;
 
 namespace modelc4_project
 {
-    internal class ClassicC1
+    internal class ClassicC4
     {
         private ModelC4Config _config;
         private Workspace _workspace;
 
-        public ClassicC1(ModelC4Config config)
+        public ClassicC4(ModelC4Config config)
         {
             _config = config;
 
@@ -26,7 +26,7 @@ namespace modelc4_project
                 Background = "#FB9D4B"
             });
 
-             styles.Add(new ElementStyle("External") {
+            styles.Add(new ElementStyle("External") {
                 FontSize = 30,
                 Background = "#FFCEE0"
             });
@@ -36,7 +36,22 @@ namespace modelc4_project
                 Background = "#FFF9B1",
                 Shape = Shape.Person
             });
+
+            styles.Add(new ElementStyle(Tags.Container) {
+                FontSize = 30,
+                Background = "#FB9D4B"
+            });
+
+            styles.Add(new ElementStyle("Database") {
+                Background = "#808080",
+                Shape = Shape.Cylinder
+            });
+
+            styles.Add(new ElementStyle("WebPage") {
+                Shape = Shape.WebBrowser
+            });
         }
+
 
         private void Prepare()
         {
@@ -69,6 +84,31 @@ namespace modelc4_project
             contextView.EnableAutomaticLayout(RankDirection.RightLeft, 300, 50, 50, true);
             contextView.AddAllSoftwareSystems();
             contextView.AddAllPeople();            
+
+            var courseAPIContainer = coursePlatformSystem.AddContainer("Course API", "Course platform core domain with endpoints", ".NET Core 5, WebApi");
+            var customerWebPageContainer = coursePlatformSystem.AddContainer("Customer Web Page", "Sell and delivering courses for customers", "Angular 9, TypeScript");
+            customerWebPageContainer.AddTags("WebPage");
+            var webAdminPanelContainer = coursePlatformSystem.AddContainer("Web Admin Panel", "Pane for courses management", ".NET Core 3.1, Razor Page");
+            webAdminPanelContainer.AddTags("WebPage");
+            var databaseContainer = coursePlatformSystem.AddContainer("Postgres Database", "Database course_db for whole application data", "RDB, Postgres 9.3");
+            databaseContainer.AddTags("Database");
+
+
+            courseAPIContainer.Uses(databaseContainer, "Uses", "ORM");
+            courseAPIContainer.Uses(tpayPlatformSystem, "Requesting payments", "HTTPS/REST");
+            courseAPIContainer.Uses(ifirmaPlatformSystem, "Generate invoice", "HTTPS/POST REST");
+            courseAPIContainer.Uses(smtpPlatformSystem, "Send invoice", "SMTP");
+            tpayPlatformSystem.Uses(courseAPIContainer, "Respons", "HTTPS/REST");
+
+            admin.Uses(webAdminPanelContainer, "Manages");
+            customer.Uses(customerWebPageContainer, "Buy and pass the course");
+            webAdminPanelContainer.Uses(courseAPIContainer, "Uses", "HTTPS/REST");
+            customerWebPageContainer.Uses(courseAPIContainer, "Uses", "HTTPS/REST");
+
+            var containerView = _workspace.Views.CreateContainerView(coursePlatformSystem, "Containers", null);
+            containerView.PaperSize = PaperSize.A4_Portrait;
+            containerView.EnableAutomaticLayout(RankDirection.TopBottom, 300, 50, 50, true);
+            containerView.AddAllElements();          
 
         }
 
