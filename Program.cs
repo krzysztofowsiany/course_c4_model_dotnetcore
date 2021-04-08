@@ -12,7 +12,6 @@ namespace modelc4_project
             .AddEnvironmentVariables()
             .Build()
             .Get<ModelC4Config>();
-
             
             //new ClassicC4(config).Publish();
 

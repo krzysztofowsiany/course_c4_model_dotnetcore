@@ -16,6 +16,7 @@ namespace modelc4_project
             
             new C1(_workspace);
             new C2(_workspace);
+            new C3(_workspace);
         }
 
         internal void Publish()

@@ -50,6 +50,22 @@ namespace modelc4_project
             styles.Add(new ElementStyle("WebPage") {
                 Shape = Shape.WebBrowser
             });
+
+            styles.Add(new ElementStyle(Tags.Component) {
+                Background = "#FB9D4B",
+                Shape = Shape.Hexagon
+            });
+            
+            styles.Add(new ElementStyle("Controller") {                
+                Shape = Shape.Component
+            });
+
+            styles.Add(new RelationshipStyle("Internal") {
+               Dashed = false,
+               Color = "#8FD14F",
+               Routing = Routing.Orthogonal
+            });
+
         }
 
 
@@ -85,6 +101,7 @@ namespace modelc4_project
             contextView.AddAllSoftwareSystems();
             contextView.AddAllPeople();            
 
+
             var courseAPIContainer = coursePlatformSystem.AddContainer("Course API", "Course platform core domain with endpoints", ".NET Core 5, WebApi");
             var customerWebPageContainer = coursePlatformSystem.AddContainer("Customer Web Page", "Sell and delivering courses for customers", "Angular 9, TypeScript");
             customerWebPageContainer.AddTags("WebPage");
@@ -108,8 +125,43 @@ namespace modelc4_project
             var containerView = _workspace.Views.CreateContainerView(coursePlatformSystem, "Containers", null);
             containerView.PaperSize = PaperSize.A4_Portrait;
             containerView.EnableAutomaticLayout(RankDirection.TopBottom, 300, 50, 50, true);
-            containerView.AddAllElements();          
+            containerView.AddAllElements();     
 
+
+            var productController = courseAPIContainer.AddComponent("Product Controller","Handle products requests.",".NET Core 5, WebApi");
+            productController.AddTags("Controller");
+            var offerController = courseAPIContainer.AddComponent("Offer Controller","Handle offers requests.",".NET Core 5, WebApi");          
+            offerController.AddTags("Controller");
+            var offerComponent = courseAPIContainer.AddComponent("Offer","Handle products logic.",".NET Core 5, ClassLib");
+            productController.Uses(offerComponent, "Uses").AddTags("Internal");
+            offerController.Uses(offerComponent, "Uses").AddTags("Internal");
+            offerComponent.Uses(databaseContainer, "Read/write from", "[DB/ORM]");
+
+            webAdminPanelContainer.Uses(productController, "Uses", "[HTTPS/REST]");
+            webAdminPanelContainer.Uses(offerController, "Uses", "[HTTPS/REST]");
+
+            
+            
+            var orderController = courseAPIContainer.AddComponent("Order Controller","Handle orders requests.",".NET Core 5, WebApi");
+            orderController.AddTags("Controller");
+            var orderComponent = courseAPIContainer.AddComponent("Order","Handle orders logic. Uses: Database Prostgres Container to read/write [ORM].", ".NET Core 5, ClassLib");
+            var paymentComponent = courseAPIContainer.AddComponent("Payment","Handle payments logic.",".NET Core 5, ClassLib");            
+            var paymentController = courseAPIContainer.AddComponent("Payment Controller","Handle payments responses.",".NET Core 5, WebApi");
+            paymentController.AddTags("Controller");
+
+            customerWebPageContainer.Uses(orderController, "Uses","[HTTPS/REST]");
+            orderController.Uses(orderComponent, "Uses").AddTags("Internal");
+            orderComponent.Uses(paymentComponent, "Request payments").AddTags("Internal");
+            paymentController.Uses(paymentComponent, "Uses").AddTags("Internal");
+
+            paymentComponent.Uses(tpayPlatformSystem, "Requesting payments", "[HTTPS/REST]");            
+            tpayPlatformSystem.Uses(paymentController, "Responses", "[HTTPS/REST]");
+
+
+            var componentView = _workspace.Views.CreateComponentView(courseAPIContainer, "Components", null);
+            componentView.PaperSize = PaperSize.A2_Landscape;
+            componentView.EnableAutomaticLayout(RankDirection.TopBottom, 300, 50, 50, true);
+            componentView.AddAllElements();
         }
 
         internal void Publish()
