@@ -1,0 +1,46 @@
+@startuml DiscountComponent
+
+package "Discount Component" {
+
+class ApplyDiscountCodeHandler {
++handle(command:ApplyDiscountCode):void
+}
+
+class Discount {
++applayDiscountCode(code:string, offerId:int):bool
+}
+
+ApplyDiscountCode <.. ApplyDiscountCodeHandler
+
+ApplyDiscountCodeHandler ..> Discount
+DiscountCodeApplied <.. Discount
+DiscountCodeWasInvaild <.. Discount
+
+Discount *--> RightPeriodRule
+Discount *--> AvailableDIscountRule
+Discount *--> VaildDiscountRule
+
+
+class GenerateDiscountHandler {
+    +handle(command:GenerateDiscount):void
+}
+
+class DiscountGenerator {
+    +generateDiscount(code:String, periodStart:DateTime, periodEnd:DateTime):bool
+}
+
+GenerateDiscount <.. GenerateDiscountHandler
+DiscountGenerator <.. GenerateDiscountHandler
+DiscountGenerated <.. DiscountGenerator
+DiscountGenerator *--> ActualOfferRule
+DiscountGenerator *--> LessDIscountRule
+
+
+hide members
+show Discount methods
+show ApplyDiscountCodeHandler methods
+show DiscountGenerator methods
+show GenerateDiscountHandler methods
+}
+
+@enduml
