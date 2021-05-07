@@ -4,7 +4,7 @@
 
 accepted
 
-## **Context**
+## Context
 
 We have some problem with TPay. On BigPicture we decide to change payment provider.
 
